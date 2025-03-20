@@ -1,0 +1,707 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		76DD5AB92D8A74F100F017D1 /* XcodebuildNvimPreview in Frameworks */ = {isa = PBXBuildFile; productRef = 76DD5AB82D8A74F100F017D1 /* XcodebuildNvimPreview */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		763B28452D87EDD3005B816E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 763B282B2D87EDD2005B816E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 763B28322D87EDD2005B816E;
+			remoteInfo = TerraParseX;
+		};
+		763B284F2D87EDD3005B816E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 763B282B2D87EDD2005B816E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 763B28322D87EDD2005B816E;
+			remoteInfo = TerraParseX;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7635DC962D8AEFBA00DB793C /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Libs;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		763B28332D87EDD2005B816E /* TerraParseX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TerraParseX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		763B28442D87EDD3005B816E /* TerraParseXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TerraParseXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		763B284E2D87EDD3005B816E /* TerraParseXUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TerraParseXUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7635DCDC2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				hcledit,
+				LICENSE,
+			);
+			target = 763B28432D87EDD3005B816E /* TerraParseXTests */;
+		};
+		7635DCDD2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				hcledit,
+				LICENSE,
+			);
+			target = 763B284D2D87EDD3005B816E /* TerraParseXUITests */;
+		};
+		76DFF6322D8AE6D5008D4F39 /* Exceptions for "TerraParseX" folder in "TerraParseX" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 763B28322D87EDD2005B816E /* TerraParseX */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		7635DCDF2D8C01EE00DB793C /* Exceptions for "Libs" folder in "Copy Files" phase from "TerraParseX" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			attributesByRelativePath = {
+				hcledit = (CodeSignOnCopy, );
+			};
+			buildPhase = 7635DC962D8AEFBA00DB793C /* Copy Files */;
+			membershipExceptions = (
+				hcledit,
+				LICENSE,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		7635DCD32D8C019000DB793C /* Libs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7635DCDF2D8C01EE00DB793C /* Exceptions for "Libs" folder in "Copy Files" phase from "TerraParseX" target */,
+				7635DCDC2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXTests" target */,
+				7635DCDD2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXUITests" target */,
+			);
+			path = Libs;
+			sourceTree = "<group>";
+		};
+		763B28352D87EDD2005B816E /* TerraParseX */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				76DFF6322D8AE6D5008D4F39 /* Exceptions for "TerraParseX" folder in "TerraParseX" target */,
+			);
+			path = TerraParseX;
+			sourceTree = "<group>";
+		};
+		763B28472D87EDD3005B816E /* TerraParseXTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TerraParseXTests;
+			sourceTree = "<group>";
+		};
+		763B28512D87EDD3005B816E /* TerraParseXUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = TerraParseXUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		763B28302D87EDD2005B816E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				76DD5AB92D8A74F100F017D1 /* XcodebuildNvimPreview in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		763B28412D87EDD3005B816E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		763B284B2D87EDD3005B816E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		763B282A2D87EDD2005B816E = {
+			isa = PBXGroup;
+			children = (
+				7635DCD32D8C019000DB793C /* Libs */,
+				763B28352D87EDD2005B816E /* TerraParseX */,
+				763B28472D87EDD3005B816E /* TerraParseXTests */,
+				763B28512D87EDD3005B816E /* TerraParseXUITests */,
+				763B28342D87EDD2005B816E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		763B28342D87EDD2005B816E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				763B28332D87EDD2005B816E /* TerraParseX.app */,
+				763B28442D87EDD3005B816E /* TerraParseXTests.xctest */,
+				763B284E2D87EDD3005B816E /* TerraParseXUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		763B28322D87EDD2005B816E /* TerraParseX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 763B28582D87EDD3005B816E /* Build configuration list for PBXNativeTarget "TerraParseX" */;
+			buildPhases = (
+				763B282F2D87EDD2005B816E /* Sources */,
+				763B28302D87EDD2005B816E /* Frameworks */,
+				763B28312D87EDD2005B816E /* Resources */,
+				7635DC962D8AEFBA00DB793C /* Copy Files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7635DCD32D8C019000DB793C /* Libs */,
+				763B28352D87EDD2005B816E /* TerraParseX */,
+			);
+			name = TerraParseX;
+			packageProductDependencies = (
+				76DD5AB82D8A74F100F017D1 /* XcodebuildNvimPreview */,
+			);
+			productName = TerraParseX;
+			productReference = 763B28332D87EDD2005B816E /* TerraParseX.app */;
+			productType = "com.apple.product-type.application";
+		};
+		763B28432D87EDD3005B816E /* TerraParseXTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 763B285B2D87EDD3005B816E /* Build configuration list for PBXNativeTarget "TerraParseXTests" */;
+			buildPhases = (
+				763B28402D87EDD3005B816E /* Sources */,
+				763B28412D87EDD3005B816E /* Frameworks */,
+				763B28422D87EDD3005B816E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				763B28462D87EDD3005B816E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				763B28472D87EDD3005B816E /* TerraParseXTests */,
+			);
+			name = TerraParseXTests;
+			packageProductDependencies = (
+			);
+			productName = TerraParseXTests;
+			productReference = 763B28442D87EDD3005B816E /* TerraParseXTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		763B284D2D87EDD3005B816E /* TerraParseXUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 763B285E2D87EDD3005B816E /* Build configuration list for PBXNativeTarget "TerraParseXUITests" */;
+			buildPhases = (
+				763B284A2D87EDD3005B816E /* Sources */,
+				763B284B2D87EDD3005B816E /* Frameworks */,
+				763B284C2D87EDD3005B816E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				763B28502D87EDD3005B816E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				763B28512D87EDD3005B816E /* TerraParseXUITests */,
+			);
+			name = TerraParseXUITests;
+			packageProductDependencies = (
+			);
+			productName = TerraParseXUITests;
+			productReference = 763B284E2D87EDD3005B816E /* TerraParseXUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		763B282B2D87EDD2005B816E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					763B28322D87EDD2005B816E = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					763B28432D87EDD3005B816E = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 763B28322D87EDD2005B816E;
+					};
+					763B284D2D87EDD3005B816E = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 763B28322D87EDD2005B816E;
+					};
+				};
+			};
+			buildConfigurationList = 763B282E2D87EDD2005B816E /* Build configuration list for PBXProject "TerraParseX" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 763B282A2D87EDD2005B816E;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				76DD5AB72D8A742B00F017D1 /* XCRemoteSwiftPackageReference "xcodebuild-nvim-preview" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 763B28342D87EDD2005B816E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				763B28322D87EDD2005B816E /* TerraParseX */,
+				763B28432D87EDD3005B816E /* TerraParseXTests */,
+				763B284D2D87EDD3005B816E /* TerraParseXUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		763B28312D87EDD2005B816E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		763B28422D87EDD3005B816E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		763B284C2D87EDD3005B816E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		763B282F2D87EDD2005B816E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		763B28402D87EDD3005B816E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		763B284A2D87EDD3005B816E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		763B28462D87EDD3005B816E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 763B28322D87EDD2005B816E /* TerraParseX */;
+			targetProxy = 763B28452D87EDD3005B816E /* PBXContainerItemProxy */;
+		};
+		763B28502D87EDD3005B816E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 763B28322D87EDD2005B816E /* TerraParseX */;
+			targetProxy = 763B284F2D87EDD3005B816E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		763B28562D87EDD3005B816E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		763B28572D87EDD3005B816E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		763B28592D87EDD3005B816E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TerraParseX/TerraParseX.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TerraParseX/Preview Content\"";
+				DEVELOPMENT_TEAM = B2APKP3A83;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TerraParseX/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TerraParseX;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opswerks.TerraParseX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		763B285A2D87EDD3005B816E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TerraParseX/TerraParseX.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TerraParseX/Preview Content\"";
+				DEVELOPMENT_TEAM = B2APKP3A83;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TerraParseX/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TerraParseX;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opswerks.TerraParseX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		763B285C2D87EDD3005B816E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B2APKP3A83;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opswerks.TerraParseXTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TerraParseX.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TerraParseX";
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		763B285D2D87EDD3005B816E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B2APKP3A83;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opswerks.TerraParseXTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TerraParseX.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TerraParseX";
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+		763B285F2D87EDD3005B816E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B2APKP3A83;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opswerks.TerraParseXUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = TerraParseX;
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Debug;
+		};
+		763B28602D87EDD3005B816E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B2APKP3A83;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.opswerks.TerraParseXUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = TerraParseX;
+				XROS_DEPLOYMENT_TARGET = 2.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		763B282E2D87EDD2005B816E /* Build configuration list for PBXProject "TerraParseX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				763B28562D87EDD3005B816E /* Debug */,
+				763B28572D87EDD3005B816E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		763B28582D87EDD3005B816E /* Build configuration list for PBXNativeTarget "TerraParseX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				763B28592D87EDD3005B816E /* Debug */,
+				763B285A2D87EDD3005B816E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		763B285B2D87EDD3005B816E /* Build configuration list for PBXNativeTarget "TerraParseXTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				763B285C2D87EDD3005B816E /* Debug */,
+				763B285D2D87EDD3005B816E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		763B285E2D87EDD3005B816E /* Build configuration list for PBXNativeTarget "TerraParseXUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				763B285F2D87EDD3005B816E /* Debug */,
+				763B28602D87EDD3005B816E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		76DD5AB72D8A742B00F017D1 /* XCRemoteSwiftPackageReference "xcodebuild-nvim-preview" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/wojciech-kulik/xcodebuild-nvim-preview";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.9;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		76DD5AB82D8A74F100F017D1 /* XcodebuildNvimPreview */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 76DD5AB72D8A742B00F017D1 /* XCRemoteSwiftPackageReference "xcodebuild-nvim-preview" */;
+			productName = XcodebuildNvimPreview;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 763B282B2D87EDD2005B816E /* Project object */;
+}

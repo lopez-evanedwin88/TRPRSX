@@ -1,0 +1,15 @@
+{
+  "originHash" : "143e24999f1053540165d724c9e9c1237e318a584a5c9da10ef2993e22d05909",
+  "pins" : [
+    {
+      "identity" : "xcodebuild-nvim-preview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wojciech-kulik/xcodebuild-nvim-preview",
+      "state" : {
+        "revision" : "53e2659e2a91f49ff57e44f72e5de07fb3baebdb",
+        "version" : "1.0.9"
+      }
+    }
+  ],
+  "version" : 3
+}
