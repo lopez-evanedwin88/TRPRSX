@@ -3,15 +3,15 @@ import SwiftUI
 struct OperationModal: View {
     @Binding var showModal: Bool
     @Binding var keyValuePairs: [KeyValueInput]
+    @Binding var showPreview: Bool
+    @Binding var actionInput: String
     let directoryPath: String?
-    let operation: String?
 
     @State private var keyInput: String = ""
-    @State private var valueInput: String = "" // Simplified for demo; we'll parse it
-    private let manager = TerraParseManager.shared
+    @State private var valueInput: String = ""
 
     var body: some View {
-        let operationValue = (operation ?? "").lowercased()
+        let operationValue = actionInput
 
         VStack {
             Text("Key-Value pair to \"\(operationValue)\" on config")
@@ -25,16 +25,21 @@ struct OperationModal: View {
                 TextField("(e.g., inputs.count)", text: $keyInput)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                Text("Value:")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                TextField("(e.g., 42 or [a, b] or {enabled = true})", text: $valueInput)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                if actionInput != "delete" {  // Hide value input for delete
+                    Text("Value:")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    TextField("(e.g., 42 or [a, b] or {enabled = true})", text: $valueInput)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
             }
             .padding(.horizontal)
 
             List(keyValuePairs, id: \.key) { pair in
-                Text("\(pair.key) = \(pair.formattedValue())")
+                // Text("\(pair.key) = \(pair.formattedValue())")
+                Text(
+                    "\(pair.action) \(pair.key) \(pair.action == "delete" ? "" : "> \(pair.formattedValue())")"
+                )
             }
             .frame(height: 100)
 
@@ -53,17 +58,7 @@ struct OperationModal: View {
                 .padding(.horizontal, 10)
 
                 Button(action: {
-                    // showModal.toggle()
                     addKeyValuePair()
-                    // let terraFiles = TerraParseManager.shared.findTerragruntFiles(
-                    //     in: "/Users/evanlopez/Development/test-project/environments/")
-                    // TerraParseManager.shared.submitChanges(
-                    //     to: terraFiles,
-                    //     keyValuePairs: [
-                    //         KeyValueInput(key: "region", value: "\"us-west-2\""),
-                    //         KeyValueInput(key: "environment", value: "\"production\""),
-                    //     ]
-                    // )
                 }) {
                     Text("Apply")
                         .frame(maxWidth: 80)
@@ -76,21 +71,13 @@ struct OperationModal: View {
             }
             .padding()
 
-            // NavigationLink(
-            //     destination: PreviewChangesScene(
-            //         filePaths: applyChanges(),
-            //         modifiedKeys: keyValuePairs.map { $0.key }
-            //     )
-            // ) {
-            //     Text("Preview Changes")
-            //         .padding()
-            //         .background(Color.blue)
-            //         .foregroundColor(.white)
-            //         .cornerRadius(8)
-            // }
-            // .disabled(keyValuePairs.isEmpty)
-
-            Spacer()
+            Button(action: {
+                showModal.toggle()
+                showPreview = true  // Switch to PreviewChangesScene
+            }) {
+                Text("Preview Changes")
+            }
+            .disabled(keyValuePairs.isEmpty)
         }
         .padding(.horizontal, 20)
         .frame(width: 400, height: 500)
@@ -99,48 +86,41 @@ struct OperationModal: View {
 
     /// Adds a key-value pair, parsing the value type from the string input.
     func addKeyValuePair() {
-        guard !keyInput.isEmpty, !valueInput.isEmpty else { return }
+        guard !keyInput.isEmpty else { return }
+        if actionInput != "delete" && valueInput.isEmpty { return }
 
-        let trimmedValue = valueInput.trimmingCharacters(in: .whitespaces)
-        let value: Any
+        let value =
+            actionInput == "delete"
+            ? String.ParsedValue.unquotedString("") : valueInput.parseValue()
 
-        // Parse the value type
-        if trimmedValue.lowercased() == "true" || trimmedValue.lowercased() == "false" {
-            value = trimmedValue.lowercased() == "true"
-        } else if let intValue = Int(trimmedValue) {
-            value = intValue
+        if let existingIndex = keyValuePairs.firstIndex(where: { $0.key == keyInput }) {
+            keyValuePairs[existingIndex] = KeyValueInput(
+                key: keyInput, value: value, action: actionInput
+            )
         } else {
-            value = trimmedValue // Default to string
+            keyValuePairs.append(
+                KeyValueInput(key: keyInput, value: value, action: actionInput))
         }
 
-        keyValuePairs.append(KeyValueInput(key: keyInput, value: value))
         keyInput = ""
         valueInput = ""
-    }
-
-    /// Applies changes to all files and returns their paths.
-    func applyChanges() -> [String] {
-        let files = manager.findTerragruntFiles(in: directoryPath!)
-        guard !files.isEmpty else { return [] }
-
-        manager.submitChanges(to: files, keyValuePairs: keyValuePairs)
-        return files
     }
 }
 
 struct OperationModal_Previews: PreviewProvider {
     @State static var showModal = true
-    @State static var keyValuePairs: [KeyValueInput] = [
-        KeyValueInput(key: "inputs", value: "test = {}"),
-    ]
+    @State static var keyValuePairs: [KeyValueInput] = []
+    @State static var showPreview = true
+    @State static var actionInput = "modify"
     @State static var directoryPath = ""
 
     static var previews: some View {
         OperationModal(
             showModal: $showModal,
             keyValuePairs: $keyValuePairs,
-            directoryPath: directoryPath,
-            operation: "Add"
+            showPreview: $showPreview,
+            actionInput: $actionInput,
+            directoryPath: directoryPath
         )
     }
 }

@@ -13,5 +13,8 @@ struct TerraParseXApp: App {
         WindowGroup {
             SelectionScene()
         }
+        .commands {
+            CommandGroup(replacing: .newItem) {} // Disable Cmd+N
+        }
     }
 }

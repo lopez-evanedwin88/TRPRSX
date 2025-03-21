@@ -40,16 +40,38 @@ class TerraParseManager {
             for pair in keyValuePairs {
                 let keyPath = pair.key // e.g., "inputs.nested.key"
                 let valueStr = pair.formattedValue()
-
-                // Use hcledit to set the attribute
+                print("keyPath", keyPath)
+                print("valueStr", valueStr)
                 let process = Process()
                 let pipe = Pipe()
+
                 process.executableURL = URL(fileURLWithPath: hcleditPath)
-                process.arguments = [
-                    "attribute", "set",
-                    keyPath, valueStr,
-                    "-f", file, "-u", // -f for file input, -u for in-place update
-                ]
+
+                // Set hcledit command based on action
+                switch pair.action.lowercased() {
+                case "add":
+                    process.arguments = [
+                        "attribute", "append",
+                        keyPath, valueStr,
+                        "-f", file, "-u", // -f for file input, -u for in-place update
+                    ]
+                case "modify":
+                    process.arguments = [
+                        "attribute", "set",
+                        keyPath, valueStr,
+                        "-f", file, "-u",
+                    ]
+                case "delete":
+                    process.arguments = [
+                        "attribute", "rm",
+                        keyPath,
+                        "-f", file, "-u",
+                    ]
+                default:
+                    print("Unknown action '\(pair.action)' for \(keyPath) in \(file)")
+                    continue
+                }
+
                 process.standardOutput = pipe
                 process.standardError = pipe
 
@@ -63,12 +85,18 @@ class TerraParseManager {
                     }
 
                     if process.terminationStatus == 0 {
-                        print("Successfully updated \(keyPath) in \(file) to \(valueStr)")
+                        print(
+                            "Successfully \(pair.action)ed \(keyPath) in \(file) \(pair.action == "delete" ? "" : "to \(valueStr)")"
+                        )
                     } else {
-                        print("hcledit failed with status \(process.terminationStatus)")
+                        print(
+                            "hcledit failed with status \(process.terminationStatus) for \(keyPath) in \(file)"
+                        )
                     }
                 } catch {
-                    print("Error running hcledit on \(file): \(error.localizedDescription)")
+                    print(
+                        "Error running hcledit on \(file) for \(keyPath): \(error.localizedDescription)"
+                    )
                 }
             }
         }

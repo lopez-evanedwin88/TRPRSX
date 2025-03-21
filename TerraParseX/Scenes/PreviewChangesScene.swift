@@ -6,48 +6,6 @@
 //
 
 import SwiftUI
-import XcodebuildNvimPreview
-
-// struct PreviewChangesScene: View {
-//     @State private var editorText = """
-//     // Sample Code
-//     import Foundation
-//
-//     func helloWorld() {
-//         print("Hello, world!")
-//     }
-//
-//     helloWorld()
-//     """
-//
-//     var body: some View {
-//         VStack {
-//             Text("Preview Scene")
-//                 .font(.largeTitle)
-//                 .bold()
-//
-//             TextEditor(text: $editorText)
-//                 .frame(height: 300)
-//                 .padding()
-//                 .border(Color.gray, width: 1)
-//                 .font(.system(size: 16, weight: .light, design: .monospaced))
-//                 .foregroundColor(.black)
-//                 .background(Color.white)
-//                 .cornerRadius(8)
-//
-//             Spacer()
-//         }
-//         .padding()
-//     }
-// }
-//
-// struct PreviewScene_Previews: PreviewProvider {
-//     static var previews: some View {
-//         PreviewChangesScene().setupNvimPreview {
-//             PreviewChangesScene()
-//         }
-//     }
-// }
 
 struct PreviewChangesScene: View {
     private let manager = TerraParseManager.shared
@@ -79,10 +37,8 @@ struct PreviewChangesScene: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
                             .border(Color.gray, width: 1)
-                            .background(Color.white)
                             .cornerRadius(8)
                         }
-                        .frame(height: 300)
                         .tabItem {
                             Text(URL(fileURLWithPath: filePaths[index]).lastPathComponent)
                         }
