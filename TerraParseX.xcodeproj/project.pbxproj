@@ -47,19 +47,23 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		7635DCDC2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXTests" target */ = {
+		769F3BE02D9155B400B0B4F4 /* Exceptions for "TerraParseX" folder in "TerraParseXTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				hcledit,
-				LICENSE,
+				Libs/hcledit/hcledit,
+				"Libs/hcledit/hcledit-LICENSE.txt",
+				Libs/hclsjon/hcl2json,
+				"Libs/hclsjon/hcl2json-LICENSE.txt",
 			);
 			target = 763B28432D87EDD3005B816E /* TerraParseXTests */;
 		};
-		7635DCDD2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXUITests" target */ = {
+		769F3BE12D9155B400B0B4F4 /* Exceptions for "TerraParseX" folder in "TerraParseXUITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				hcledit,
-				LICENSE,
+				Libs/hcledit/hcledit,
+				"Libs/hcledit/hcledit-LICENSE.txt",
+				Libs/hclsjon/hcl2json,
+				"Libs/hclsjon/hcl2json-LICENSE.txt",
 			);
 			target = 763B284D2D87EDD3005B816E /* TerraParseXUITests */;
 		};
@@ -73,34 +77,30 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		7635DCDF2D8C01EE00DB793C /* Exceptions for "Libs" folder in "Copy Files" phase from "TerraParseX" target */ = {
+		769F3BE72D9155D100B0B4F4 /* Exceptions for "TerraParseX" folder in "Copy Files" phase from "TerraParseX" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			attributesByRelativePath = {
-				hcledit = (CodeSignOnCopy, );
+				Libs/hcledit/hcledit = (CodeSignOnCopy, );
+				Libs/hclsjon/hcl2json = (CodeSignOnCopy, );
 			};
 			buildPhase = 7635DC962D8AEFBA00DB793C /* Copy Files */;
 			membershipExceptions = (
-				hcledit,
-				LICENSE,
+				Libs/hcledit/hcledit,
+				"Libs/hcledit/hcledit-LICENSE.txt",
+				Libs/hclsjon/hcl2json,
+				"Libs/hclsjon/hcl2json-LICENSE.txt",
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7635DCD32D8C019000DB793C /* Libs */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				7635DCDF2D8C01EE00DB793C /* Exceptions for "Libs" folder in "Copy Files" phase from "TerraParseX" target */,
-				7635DCDC2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXTests" target */,
-				7635DCDD2D8C01C500DB793C /* Exceptions for "Libs" folder in "TerraParseXUITests" target */,
-			);
-			path = Libs;
-			sourceTree = "<group>";
-		};
 		763B28352D87EDD2005B816E /* TerraParseX */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				76DFF6322D8AE6D5008D4F39 /* Exceptions for "TerraParseX" folder in "TerraParseX" target */,
+				769F3BE72D9155D100B0B4F4 /* Exceptions for "TerraParseX" folder in "Copy Files" phase from "TerraParseX" target */,
+				769F3BE02D9155B400B0B4F4 /* Exceptions for "TerraParseX" folder in "TerraParseXTests" target */,
+				769F3BE12D9155B400B0B4F4 /* Exceptions for "TerraParseX" folder in "TerraParseXUITests" target */,
 			);
 			path = TerraParseX;
 			sourceTree = "<group>";
@@ -146,7 +146,6 @@
 		763B282A2D87EDD2005B816E = {
 			isa = PBXGroup;
 			children = (
-				7635DCD32D8C019000DB793C /* Libs */,
 				763B28352D87EDD2005B816E /* TerraParseX */,
 				763B28472D87EDD3005B816E /* TerraParseXTests */,
 				763B28512D87EDD3005B816E /* TerraParseXUITests */,
@@ -181,7 +180,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				7635DCD32D8C019000DB793C /* Libs */,
 				763B28352D87EDD2005B816E /* TerraParseX */,
 			);
 			name = TerraParseX;

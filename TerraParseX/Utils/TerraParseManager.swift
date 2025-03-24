@@ -30,12 +30,33 @@ class TerraParseManager {
     }
 
     /// Adds or updates key-value pairs in the specified HCL files using hcledit.
-    func submitChanges(to files: [String], keyValuePairs: [KeyValueInput]) {
-        guard let hcleditPath = getEmbeddedHcleditPath() else {
-            print("hcledit not found in app bundle")
+    func submitChanges(to files: [String], keyValuePairs: [KeyValueInput], inputKey: String = "") {
+        do {
+            try HCLTool.hcledit.validate()
+        } catch {
+            print("Error: \(error)")
             return
         }
 
+        if !inputKey.contains("."), false { // Validation if not root-key
+            composeHCLConfiguration(
+                files: files, keyValuePairs: keyValuePairs
+            )
+        } else {
+            composeCustomConfigurationHCL(
+                files: files, keyValuePairs: keyValuePairs,
+                actionInput: inputKey
+            )
+        }
+    }
+
+    /// A compose function that could be used for editing HCL files
+    /// This function implements 2-levels of nested key-value pairs
+    /// Which was the limitation of hcledit tool
+    func composeHCLConfiguration(
+        files: [String], keyValuePairs: [KeyValueInput],
+        hcleditPath: String = HCLTool.hcledit.executableURL!
+    ) {
         for file in files {
             for pair in keyValuePairs {
                 let keyPath = pair.key // e.g., "inputs.nested.key"
@@ -102,23 +123,99 @@ class TerraParseManager {
         }
     }
 
-    func getEmbeddedHcleditPath() -> String? {
-        guard let path = Bundle.main.path(forResource: "hcledit", ofType: nil, inDirectory: "Libs")
-        else {
-            print("hcledit not found in Libs/")
-            return nil
+    /// A custom compose function that will be used for editing HCL files if attribute type config
+    /// This will only work for root level key-value pairs
+    func composeCustomConfigurationHCL(
+        files: [String], keyValuePairs: [KeyValueInput],
+        actionInput: String
+    ) {
+        let hcleditProcess = Process()
+        let hcleditPipe = Pipe()
+
+        // Validate tools
+        do {
+            try HCLTool.hcl2json.validate()
+        } catch {
+            print("Error: \(error)")
         }
-        // Ensure it's executable
-        let fileManager = FileManager.default
-        if !fileManager.isExecutableFile(atPath: path) {
+
+        guard let hcleditURL = HCLTool.hcledit.executableURL else {
+            print("Error: hcledit executable URL is nil")
+            return
+        }
+
+        for file in files {
+            hcleditProcess.executableURL = URL(fileURLWithPath: hcleditURL)
+            hcleditProcess.arguments =
+                HCLEditCommand.attributeGet(key: actionInput, file: file).arguments
+            hcleditProcess.standardOutput = hcleditPipe
+            hcleditProcess.standardError = hcleditPipe
+
+            let hcl2jsonProcess = Process()
+            let hcl2jsonPipe = Pipe()
+
+            guard let hcl2jsonURL = HCLTool.hcl2json.executableURL else {
+                print("Error: hcl2json executable URL is nil")
+                continue
+            }
+            hcl2jsonProcess.executableURL = URL(fileURLWithPath: hcl2jsonURL)
+            hcl2jsonProcess.standardInput = hcleditPipe
+            hcl2jsonProcess.standardOutput = hcl2jsonPipe
+            hcl2jsonProcess.standardError = hcl2jsonPipe
+
             do {
-                try fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: path)
+                try hcleditProcess.run()
+                try hcl2jsonProcess.run()
+                hcleditProcess.waitUntilExit()
+
+                var configDict: [String: Any]
+                let jsonData = hcl2jsonPipe.fileHandleForReading.readDataToEndOfFile()
+                if let jsonString = String(data: jsonData, encoding: .utf8)?.trimmingCharacters(
+                    in: .whitespacesAndNewlines), !jsonString.isEmpty,
+                    let json = try? JSONSerialization.jsonObject(
+                        with: jsonString.data(using: .utf8)!) as? [String: Any]
+                {
+                    configDict = json
+                    print("test123", configDict)
+                } else {
+                    print("\(file): No existing config for '\(actionInput)' or conversion failed")
+                    print("Error parsing JSON: \(String(data: jsonData, encoding: .utf8) ?? "")")
+                    configDict = [:]
+                }
+                //
+                // for pair in keyValuePairs {
+                //     let keyPath = pair.key // e.g., "inputs.nested.key"
+                //     let valueStr = pair.formattedValue()
+                //
+                //     switch pair.action.lowercased() {
+                //     case "add", "modify":
+                //         configDict[keyPath] = valueStr
+                //     case "delete":
+                //         configDict.removeValue(forKey: keyPath)
+                //     default:
+                //         print("Unknown action '\(pair.action)' for \(pair.key) in \(file)")
+                //         continue
+                //     }
+                // }
+                // let updatedJsonData = try! JSONSerialization.data(
+                //     withJSONObject: configDict, options: [.prettyPrinted]
+                // )
+                // let updatedJsonString = String(data: updatedJsonData, encoding: .utf8)!
+                //     .replacingOccurrences(of: "\n", with: "") // Compact it
+                //     .replacingOccurrences(of: " ", with: "") // Remove spaces
+                //
+                // let keyValueInputs = [
+                //     KeyValueInput(
+                //         key: actionInput,
+                //         value: updatedJsonString.parseValue(),
+                //         action: "add"
+                //     ),
+                // ]
+                // composeHCLConfiguration(files: [file], keyValuePairs: keyValueInputs)
             } catch {
-                print("Failed to make hcledit executable: \(error)")
-                return nil
+                print("Error processing \(file): \(error)")
             }
         }
-        return path
     }
 
     /// For debugging: Reads and prints the file content.
@@ -162,6 +259,87 @@ class TerraParseManager {
         } catch {
             print("Error reading file \(filePath): \(error)")
             return AttributedString("Error loading file content.")
+        }
+    }
+}
+
+func getEmbeddedHcleditPath() -> String? {
+    guard let path = Bundle.main.path(forResource: "hcledit", ofType: nil, inDirectory: "Libs")
+    else {
+        print("hcledit not found in Libs/")
+        return nil
+    }
+    // Ensure it's executable
+    let fileManager = FileManager.default
+    if !fileManager.isExecutableFile(atPath: path) {
+        do {
+            try fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: path)
+        } catch {
+            print("Failed to make hcledit executable: \(error)")
+            return nil
+        }
+    }
+    return path
+}
+
+func getEmbeddedHcl2jsonPath() -> String? {
+    guard let path = Bundle.main.path(forResource: "hcl2json", ofType: nil, inDirectory: "Libs")
+    else {
+        print("hcl2json not found in Libs/")
+        return nil
+    }
+    let fileManager = FileManager.default
+    if !fileManager.isExecutableFile(atPath: path) {
+        do {
+            try fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: path)
+        } catch {
+            print("Failed to make hcl2json executable: \(error)")
+            return nil
+        }
+    }
+    return path
+}
+
+// Enums
+enum HCLTool {
+    case hcledit
+    case hcl2json
+
+    var executableURL: String? {
+        let path: String?
+        switch self {
+        case .hcledit:
+            path = getEmbeddedHcleditPath()
+        case .hcl2json:
+            path = getEmbeddedHcl2jsonPath()
+        }
+        return path
+    }
+
+    func validate() throws {
+        guard let url = executableURL else {
+            throw HCLToolError.toolNotFound(name: String(describing: self))
+        }
+        guard FileManager.default.fileExists(atPath: url) else {
+            throw HCLToolError.toolNotFound(name: String(describing: self))
+        }
+    }
+}
+
+enum HCLToolError: Error {
+    case toolNotFound(name: String)
+}
+
+enum HCLEditCommand {
+    case attributeGet(key: String, file: String)
+    case attributeSet(key: String, value: String, file: String)
+
+    var arguments: [String] {
+        switch self {
+        case let .attributeGet(key, file):
+            return ["attribute", "get", key, "-f", file]
+        case let .attributeSet(key, value, file):
+            return ["attribute", "set", key, value, "-f", file, "-u"]
         }
     }
 }

@@ -22,7 +22,7 @@ struct OperationModal: View {
                 Text("Key:")
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                TextField("(e.g., inputs.count)", text: $keyInput)
+                TextField("(e.g., inputs or inputs.count", text: $keyInput)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
 
                 if actionInput != "delete" {  // Hide value input for delete
@@ -36,9 +36,8 @@ struct OperationModal: View {
             .padding(.horizontal)
 
             List(keyValuePairs, id: \.key) { pair in
-                // Text("\(pair.key) = \(pair.formattedValue())")
                 Text(
-                    "\(pair.action) \(pair.key) \(pair.action == "delete" ? "" : "> \(pair.formattedValue())")"
+                    "\(pair.action) \(pair.key) \(pair.action == "delete" ? "" : "= \(pair.formattedValue())")"
                 )
             }
             .frame(height: 100)

@@ -215,7 +215,7 @@ struct SelectionScene: View {
     }
 
     /// Applies changes to all files and returns their paths.
-    func applyChanges() -> [String] {
+    func applyChanges(inputKey: String = "") -> [String] {
         let files = manager.findTerragruntFiles(in: selectedDirectory!.path)
         guard !files.isEmpty else { return [] }
 
