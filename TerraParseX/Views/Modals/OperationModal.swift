@@ -57,8 +57,6 @@ struct OperationModal: View {
                 .padding(.horizontal, 10)
 
                 Button(action: {
-                    keyInput = "inputs"
-                    valueInput = "{enabled = true}"
                     addKeyValuePair()
                 }) {
                     Text("Apply")

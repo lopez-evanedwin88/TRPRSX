@@ -290,14 +290,6 @@ class TerraParseManager {
                     jqFilter: jqFilter,
                     inputKey: inputKey
                 ) {
-                    // let keyValueInputs = [
-                    //     KeyValueInput(
-                    //         key: inputKey,
-                    //         value: wrappedIt.parseValue(),
-                    //         action: "add"
-                    //     )
-                    // ]
-                    // composeHCLConfiguration(files: [file], keyValuePairs: keyValueInputs)
                     let process = Process()
                     let pipe = Pipe()
 
@@ -427,61 +419,6 @@ func jsonToHcl(jsonInput: String, jqFilter: String, inputKey: String = "") -> St
         return nil
     }
 }
-
-// func jsonToHCL(dict: [String: Any], indentLevel: Int = 0, wrapInBraces: Bool = false) -> String {
-//     let indent = String(repeating: "  ", count: indentLevel)
-//     var hclLines: [String] = []
-//
-//     for (key, value) in dict {
-//         switch value {
-//         case let bool as Int where bool == 1 || bool == 0:
-//             // Handle hcl2json’s 1/0 as true/false
-//             let boolStr = bool == 1 ? "true" : "false"
-//             hclLines.append("\(indent)\(key) = \(boolStr)")
-//
-//         case let str as String:
-//             hclLines.append("\(indent)\(key) = \"\(str)\"")
-//
-//         case let num as Int:
-//             hclLines.append("\(indent)\(key) = \(num)")
-//
-//         case let array as [Any]:
-//             let arrayItems = array.map { item in
-//                 switch item {
-//                 case let bool as Int where bool == 1 || bool == 0:
-//                     return bool == 1 ? "true" : "false"
-//                 case let str as String:
-//                     return "\"\(str)\""
-//                 case let num as Int:
-//                     return "\(num)"
-//                 case let nested as [String: Any]:
-//                     return jsonToHCL(dict: nested, indentLevel: indentLevel + 1, wrapInBraces: true)
-//                 default:
-//                     return String(describing: item)
-//                 }
-//             }.joined(separator: ", ")
-//             hclLines.append("\(indent)\(key) = [\(arrayItems)]")
-//
-//         case let nested as [String: Any]:
-//             let nestedHCL = jsonToHCL(
-//                 dict: nested, indentLevel: indentLevel + 1, wrapInBraces: true
-//             )
-//             hclLines.append("\(indent)\(key) = {")
-//             hclLines.append(nestedHCL)
-//             hclLines.append("\(indent)}")
-//
-//         default:
-//             hclLines.append("\(indent)\(key) = \"\(String(describing: value))\"")  // Fallback
-//         }
-//     }
-//
-//     let content = hclLines.joined(separator: ", ")
-//     if wrapInBraces {
-//         return "{ \(content) }"  // Single-line with commas
-//     } else {
-//         return content
-//     }
-// }
 
 // Helper to simulate hcl2json (replace with actual hcl2json call if needed)
 func hclToJSON(hclData: Data) throws -> Data {
