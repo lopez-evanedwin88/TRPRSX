@@ -54,6 +54,7 @@
 				"Libs/hcledit/hcledit-LICENSE.txt",
 				Libs/hclsjon/hcl2json,
 				"Libs/hclsjon/hcl2json-LICENSE.txt",
+				Libs/jq/jq,
 			);
 			target = 763B28432D87EDD3005B816E /* TerraParseXTests */;
 		};
@@ -64,6 +65,7 @@
 				"Libs/hcledit/hcledit-LICENSE.txt",
 				Libs/hclsjon/hcl2json,
 				"Libs/hclsjon/hcl2json-LICENSE.txt",
+				Libs/jq/jq,
 			);
 			target = 763B284D2D87EDD3005B816E /* TerraParseXUITests */;
 		};
@@ -82,6 +84,7 @@
 			attributesByRelativePath = {
 				Libs/hcledit/hcledit = (CodeSignOnCopy, );
 				Libs/hclsjon/hcl2json = (CodeSignOnCopy, );
+				Libs/jq/jq = (CodeSignOnCopy, );
 			};
 			buildPhase = 7635DC962D8AEFBA00DB793C /* Copy Files */;
 			membershipExceptions = (
@@ -89,6 +92,7 @@
 				"Libs/hcledit/hcledit-LICENSE.txt",
 				Libs/hclsjon/hcl2json,
 				"Libs/hclsjon/hcl2json-LICENSE.txt",
+				Libs/jq/jq,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
