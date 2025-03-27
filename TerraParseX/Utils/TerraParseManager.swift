@@ -272,9 +272,9 @@ class TerraParseManager {
                 let jqFilter = """
                 def to_hcl:
                     if type == \"object\" then
-                        "{ " + (to_entries | map("\\(.key) = \\(.value | to_hcl)") | join(", ")) + " }"
+                        "{\n" + (to_entries | map("\\(.key) = \\(.value | to_hcl)") | join(",\n")) + "\n}"
                     elif type == \"array\" then
-                        "[ " + (map(to_hcl) | join(", ")) + " ]"
+                        "[\n" + (map(to_hcl) | join(",\n")) + "\n]"
                     elif type == \"string\" and test(\"^\\\\$\\\\{.*\\\\}$\") then
                         .[2:-1]
                     elif type == \"string\" then
@@ -290,21 +290,30 @@ class TerraParseManager {
                     jqFilter: jqFilter,
                     inputKey: inputKey
                 ) {
-                    let process = Process()
-                    let pipe = Pipe()
-
-                    process.executableURL = URL(fileURLWithPath: HCLTool.hcledit.executableURL!)
-                    process.arguments = [
-                        "attribute", "append",
-                        inputKey,
-                        hclOutput.replacingOccurrences(of: "\(inputKey) = ", with: ""),
-                        "-f", file, "-u",  // -f for file input, -u for in-place update
+                    // let process = Process()
+                    // let pipe = Pipe()
+                    //
+                    // process.executableURL = URL(fileURLWithPath: HCLTool.hcledit.executableURL!)
+                    // process.arguments = [
+                    //     "attribute", "append",
+                    //     inputKey,
+                    //     hclOutput.replacingOccurrences(of: "\(inputKey) = ", with: ""),
+                    //     "-f", file, "-u", // -f for file input, -u for in-place update
+                    // ]
+                    //
+                    // process.standardOutput = pipe
+                    // process.standardError = pipe
+                    // try process.run()
+                    // process.waitUntilExit()
+                    let keyValuePairs = [
+                        KeyValueInput(
+                            key: inputKey,
+                            value: hclOutput.replacingOccurrences(of: "\(inputKey) = ", with: "")
+                                .parseValue(),
+                            action: "add"
+                        ),
                     ]
-
-                    process.standardOutput = pipe
-                    process.standardError = pipe
-                    try process.run()
-                    process.waitUntilExit()
+                    composeHCLConfiguration(files: [file], keyValuePairs: keyValuePairs)
                 }
             } catch {
                 print("Error processing \(file): \(error)")
@@ -433,17 +442,57 @@ func hclToJSON(hclData: Data) throws -> Data {
         )
     }
 
-    // Parse HCL into a dictionary
+    // Cleans a string by removing escaped quotes and wrapping unquoted values in ${}
+    func cleanString(_ value: String) -> String {
+        var trimmed = value.trimmingCharacters(in: .whitespaces)
+
+        // Remove escaped quotes (\") from strings
+        if trimmed.hasPrefix("\"") && trimmed.hasSuffix("\"") {
+            trimmed = String(trimmed.dropFirst().dropLast()) // Remove surrounding quotes
+        } else {
+            // Wrap unquoted values in ${}, excluding numbers & booleans
+            if !trimmed.isEmpty, !isBooleanOrNumber(trimmed) {
+                trimmed = "${\(trimmed)}"
+            }
+        }
+        return trimmed
+    }
+
+    // Checks if a value is a number or boolean
+    func isBooleanOrNumber(_ value: String) -> Bool {
+        return value == "true" || value == "false" || Int(value) != nil
+    }
+
+    // Parses arrays from HCL
+    func parseArray(_ input: String) -> [Any] {
+        let items =
+            input
+                .dropFirst().dropLast() // Remove surrounding brackets []
+                .split(separator: ",")
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+
+        return items.map(parseScalarValue)
+    }
+
+    // Parses scalar values (boolean, number, string)
+    func parseScalarValue(_ value: String) -> Any {
+        if value == "true" { return true }
+        if value == "false" { return false }
+        if let num = Int(value) { return num }
+        return cleanString(value)
+    }
+
+    // Recursively parses HCL into a dictionary
     func parseHCL(_ input: String) throws -> [String: Any] {
-        var result: [String: Any] = [:]
         guard input.hasPrefix("{") && input.hasSuffix("}") else {
             throw NSError(
                 domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "HCL must be an object"]
             )
         }
-        let content = String(input.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
 
-        // Split top-level pairs (not perfect—assumes no commas in values)
+        var result: [String: Any] = [:]
+        let content = input.dropFirst().dropLast().trimmingCharacters(in: .whitespaces)
+
         let pairs = content.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
         for pair in pairs {
             let parts = pair.split(separator: "=", maxSplits: 1).map {
@@ -455,51 +504,24 @@ func hclToJSON(hclData: Data) throws -> Data {
                     userInfo: [NSLocalizedDescriptionKey: "Invalid HCL pair: \(pair)"]
                 )
             }
+
             let key = parts[0]
             let valueStr = parts[1]
 
             if valueStr.hasPrefix("{") && valueStr.hasSuffix("}") {
-                // Nested object
-                result[key] = try parseHCL(valueStr)
+                result[key] = try parseHCL(valueStr) // Nested object
             } else if valueStr.hasPrefix("[") && valueStr.hasSuffix("]") {
-                // Array
-                let arrayContent = String(valueStr.dropFirst().dropLast())
-                let items = arrayContent.split(separator: ",").map {
-                    $0.trimmingCharacters(in: .whitespaces)
-                }
-                var array: [Any] = []
-                for item in items {
-                    if item == "true" {
-                        array.append(1)
-                    } else if item == "false" {
-                        array.append(0)
-                    } else if let num = Int(item) {
-                        array.append(num)
-                    } else {
-                        array.append(item) // String values
-                    }
-                }
-                result[key] = array
+                result[key] = parseArray(valueStr) // Array
             } else {
-                // Scalar value
-                if valueStr == "true" {
-                    result[key] = 1
-                } else if valueStr == "false" {
-                    result[key] = 0
-                } else if let num = Int(valueStr) {
-                    result[key] = num
-                } else {
-                    result[key] = valueStr // String
-                }
+                result[key] = parseScalarValue(valueStr) // Scalar value
             }
         }
         return result
     }
 
-    // Convert to JSON
+    // Convert parsed HCL to JSON
     let dict = try parseHCL(hclString)
-    let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
-    return jsonData
+    return try JSONSerialization.data(withJSONObject: dict, options: [])
 }
 
 func getEmbeddedHcleditPath() -> String? {
