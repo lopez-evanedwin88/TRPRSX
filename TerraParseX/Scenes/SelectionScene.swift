@@ -24,203 +24,173 @@ struct SelectionScene: View {
     let operations = ["add", "modify", "delete"]
 
     @State private var showModal: Bool = false
-    @State private var showPreview: Bool = false  // Toggle for PreviewChangesScene
     @State private var keyValuePairs: [KeyValueInput] = []
     @State private var selectedDirectory: URL?
     @State private var selectedOperation: String = "modify"
-    private let manager = TerraParseManager.shared
 
     var body: some View {
-        if showPreview {
-            PreviewChangesScene(
-                filePaths: applyChanges(),
-                modifiedKeys: keyValuePairs.map { $0.key }
-            )
-            .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button(action: {
-                        showPreview = false  // Go back to SelectionScene
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .foregroundColor(.blue)
-                    }
-                }
+        VStack(spacing: 20) {
+            Text("File Selector")
+                .font(.largeTitle)
+                .bold()
+                .padding(.top, 30)
+
+            if let selectedDirectory = selectedDirectory {
+                Text("Selected Directory: \(selectedDirectory.path)")
+            } else {
+                Text("No directory selected")
             }
-        } else {
-            VStack(spacing: 20) {
-                Text("File Selector")
-                    .font(.largeTitle)
-                    .bold()
-                    .padding(.top, 30)
 
-                if let selectedDirectory = selectedDirectory {
-                    Text("Selected Directory: \(selectedDirectory.path)")
-                } else {
-                    Text("No directory selected")
-                }
-
-                Button("Select Directory") {
-                    selectedDirectory = selectDirectory()
-                }
-
-                Picker(selection: $selectedEnvironment) {
-                    ForEach(environments, id: \.self) { environment in
-                        Text(environment)
-                    }
-                } label: {
-                    Text("Environment").frame(width: 90, alignment: .leading)
-                }
-                .pickerStyle(MenuPickerStyle())
-                .padding()
-                .frame(width: 350)
-                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
-
-                Picker(selection: $selectedAccount) {
-                    ForEach(accounts, id: \.self) { account in
-                        Text(account)
-                    }
-                } label: {
-                    Text("Account").frame(width: 90, alignment: .leading)
-                }
-                .pickerStyle(MenuPickerStyle())
-                .padding()
-                .frame(width: 350)
-                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
-
-                Picker(selection: $selectedRegion) {
-                    ForEach(regions, id: \.self) { region in
-                        Text(region)
-                    }
-                } label: {
-                    Text("Region").frame(width: 90, alignment: .leading)
-                }
-                .pickerStyle(MenuPickerStyle())
-                .padding()
-                .frame(width: 350)
-                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
-
-                Picker(selection: $selectedCluster) {
-                    ForEach(clusters, id: \.self) { cluster in
-                        Text(cluster)
-                    }
-                } label: {
-                    Text("Cluster").frame(width: 90, alignment: .leading)
-                }
-                .pickerStyle(MenuPickerStyle())
-                .padding()
-                .frame(width: 350)
-                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
-
-                Picker(selection: $selectedService) {
-                    ForEach(services, id: \.self) { service in
-                        Text(service)
-                    }
-                } label: {
-                    Text("Service").frame(width: 90, alignment: .leading)
-                }
-                .pickerStyle(MenuPickerStyle())
-                .padding()
-                .frame(width: 350)
-                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
-
-                HStack {
-                    Spacer()
-                    Text("Operation:")
-                        .font(.headline)
-                        .padding(.trailing, 10)
-                        .frame(alignment: .center)
-
-                    HStack {
-                        ForEach(operations, id: \.self) { operation in
-                            Button(action: {
-                                selectedOperation = operation
-                            }) {
-                                HStack {
-                                    Image(
-                                        systemName: selectedOperation == operation
-                                            ? "circle.fill" : "circle")
-                                    Text(operation.capitalized)
-                                        .padding(.leading, 5)
-                                }.padding(5)
-                            }
-                            .foregroundColor(.black)
-                        }
-                    }
-                    Spacer()
-                }
-
-                HStack {
-                    Button(action: {
-                        resetForm()
-                    }) {
-                        Text("Clear")
-                            .frame(maxWidth: 100)
-                            .padding(12)
-                            .background(Color.gray)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .padding(.horizontal, 10)
-
-                    Button(action: {
-                        // submitForm()
-                        showModal = true
-                    }) {
-                        Text("Find")
-                            .frame(maxWidth: 100)
-                            .padding(12)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .disabled(isSubmitDisabled)
-                }
-                .padding(.vertical, 20)
-                .padding(.bottom, 10)
-            }
-            .frame(width: 450)
-            .sheet(isPresented: $showModal) {
-                if let url = selectedDirectory, !url.path.isEmpty {
-                    OperationModal(
-                        showModal: $showModal,
-                        keyValuePairs: $keyValuePairs,
-                        showPreview: $showPreview,
-                        actionInput: $selectedOperation,
-                        directoryPath: url.path
-                    )
-                } else {
-                    VStack {
-                        Text("No valid URL selected")
-                            .padding()
-                        Button("Close") {
-                            showModal = false  // Dismiss the sheet
-                        }
-                        .padding()
-                    }
-                    .onAppear {
-                        if selectedDirectory == nil {
-                            print("Log: URL is nil")
-                        } else if selectedDirectory!.path.isEmpty {
-                            print("Log: URL path is empty")
-                        }
-                    }
-                }
-            }
-            .onAppear {
+            Button("Select Directory") {
                 selectedDirectory = selectDirectory()
             }
+
+            Picker(selection: $selectedEnvironment) {
+                ForEach(environments, id: \.self) { environment in
+                    Text(environment)
+                }
+            } label: {
+                Text("Environment").frame(width: 90, alignment: .leading)
+            }
+            .pickerStyle(MenuPickerStyle())
+            .padding()
+            .frame(width: 350)
+            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
+
+            Picker(selection: $selectedAccount) {
+                ForEach(accounts, id: \.self) { account in
+                    Text(account)
+                }
+            } label: {
+                Text("Account").frame(width: 90, alignment: .leading)
+            }
+            .pickerStyle(MenuPickerStyle())
+            .padding()
+            .frame(width: 350)
+            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
+
+            Picker(selection: $selectedRegion) {
+                ForEach(regions, id: \.self) { region in
+                    Text(region)
+                }
+            } label: {
+                Text("Region").frame(width: 90, alignment: .leading)
+            }
+            .pickerStyle(MenuPickerStyle())
+            .padding()
+            .frame(width: 350)
+            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
+
+            Picker(selection: $selectedCluster) {
+                ForEach(clusters, id: \.self) { cluster in
+                    Text(cluster)
+                }
+            } label: {
+                Text("Cluster").frame(width: 90, alignment: .leading)
+            }
+            .pickerStyle(MenuPickerStyle())
+            .padding()
+            .frame(width: 350)
+            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
+
+            Picker(selection: $selectedService) {
+                ForEach(services, id: \.self) { service in
+                    Text(service)
+                }
+            } label: {
+                Text("Service").frame(width: 90, alignment: .leading)
+            }
+            .pickerStyle(MenuPickerStyle())
+            .padding()
+            .frame(width: 350)
+            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
+
+            HStack {
+                Spacer()
+                Text("Operation:")
+                    .font(.headline)
+                    .padding(.trailing, 10)
+                    .frame(alignment: .center)
+
+                HStack {
+                    ForEach(operations, id: \.self) { operation in
+                        Button(action: {
+                            selectedOperation = operation
+                        }) {
+                            HStack {
+                                Image(
+                                    systemName: selectedOperation == operation
+                                        ? "circle.inset.filled" : "circle")
+                                Text(operation.capitalized)
+                                    .padding(.leading, 5)
+                            }.padding(5)
+                        }
+                        .foregroundColor(.black)
+                    }
+                }
+                Spacer()
+            }
+
+            HStack {
+                Button(action: {
+                    resetForm()
+                }) {
+                    Text("Clear")
+                        .frame(maxWidth: 100)
+                        .padding(12)
+                        .background(Color.gray)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.horizontal, 10)
+
+                Button(action: {
+                    showModal = true
+                }) {
+                    Text("Find")
+                        .frame(maxWidth: 100)
+                        .padding(12)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .disabled(isSubmitDisabled)
+            }
+            .padding(.vertical, 20)
+            .padding(.bottom, 10)
         }
-    }
-
-    /// Applies changes to all files and returns their paths.
-    func applyChanges(inputKey: String = "") -> [String] {
-        let files = manager.findTerragruntFiles(in: selectedDirectory!.path)
-        guard !files.isEmpty else { return [] }
-
-        manager.submitChanges(to: files, keyValuePairs: keyValuePairs)
-        return files
+        .frame(width: 450)
+        .sheet(isPresented: $showModal) {
+            if let url = selectedDirectory, !url.path.isEmpty {
+                OperationModal(
+                    showModal: $showModal,
+                    keyValuePairs: $keyValuePairs,
+                    actionInput: $selectedOperation,
+                    directoryPath: url.path
+                )
+            } else {
+                VStack {
+                    Text("No valid URL selected")
+                        .padding()
+                    Button("Close") {
+                        showModal = false // Dismiss the sheet
+                    }
+                    .padding()
+                }
+                .onAppear {
+                    if selectedDirectory == nil {
+                        print("Log: URL is nil")
+                    } else if selectedDirectory!.path.isEmpty {
+                        print("Log: URL path is empty")
+                    }
+                }
+            }
+        }
+        .onAppear {
+            selectedDirectory = selectDirectory()
+        }
     }
 
     func selectDirectory() -> URL? {

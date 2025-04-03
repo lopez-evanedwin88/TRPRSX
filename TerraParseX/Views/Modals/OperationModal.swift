@@ -3,12 +3,16 @@ import SwiftUI
 struct OperationModal: View {
     @Binding var showModal: Bool
     @Binding var keyValuePairs: [KeyValueInput]
-    @Binding var showPreview: Bool
     @Binding var actionInput: String
     let directoryPath: String?
 
     @State private var keyInput: String = ""
     @State private var valueInput: String = ""
+
+    @EnvironmentObject private var appData: AppData
+    @Environment(\.openWindow) var openWindow
+
+    private let manager = TerraParseManager.shared
 
     var body: some View {
         let operationValue = actionInput
@@ -25,7 +29,7 @@ struct OperationModal: View {
                 TextField("(e.g., inputs or inputs.count", text: $keyInput)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
 
-                if actionInput != "delete" {  // Hide value input for delete
+                if actionInput != "delete" { // Hide value input for delete
                     Text("Value:")
                         .font(.subheadline)
                         .foregroundColor(.gray)
@@ -71,8 +75,11 @@ struct OperationModal: View {
             .padding()
 
             Button(action: {
-                showModal.toggle()
-                showPreview = true  // Switch to PreviewChangesScene
+                // showModal.toggle()
+                appData.update(
+                    filePaths: applyChanges(), modifiedKeys: keyValuePairs.map { $0.key }
+                )
+                openWindow(id: "Preview")
             }) {
                 Text("Preview Changes")
             }
@@ -83,6 +90,15 @@ struct OperationModal: View {
         .cornerRadius(10)
     }
 
+    /// Applies changes to all files and returns their paths.
+    func applyChanges(inputKey _: String = "") -> [String] {
+        let files = manager.findTerragruntFiles(in: directoryPath!)
+        guard !files.isEmpty else { return [] }
+
+        manager.submitChanges(to: files, keyValuePairs: keyValuePairs)
+        return files
+    }
+
     /// Adds a key-value pair, parsing the value type from the string input.
     func addKeyValuePair() {
         guard !keyInput.isEmpty else { return }
@@ -90,7 +106,7 @@ struct OperationModal: View {
 
         let value =
             actionInput == "delete"
-            ? String.ParsedValue.unquotedString("") : valueInput.parseValue()
+                ? String.ParsedValue.unquotedString("") : valueInput.parseValue()
 
         if let existingIndex = keyValuePairs.firstIndex(where: { $0.key == keyInput }) {
             keyValuePairs[existingIndex] = KeyValueInput(
@@ -109,7 +125,6 @@ struct OperationModal: View {
 struct OperationModal_Previews: PreviewProvider {
     @State static var showModal = true
     @State static var keyValuePairs: [KeyValueInput] = []
-    @State static var showPreview = true
     @State static var actionInput = "modify"
     @State static var directoryPath = ""
 
@@ -117,7 +132,6 @@ struct OperationModal_Previews: PreviewProvider {
         OperationModal(
             showModal: $showModal,
             keyValuePairs: $keyValuePairs,
-            showPreview: $showPreview,
             actionInput: $actionInput,
             directoryPath: directoryPath
         )
