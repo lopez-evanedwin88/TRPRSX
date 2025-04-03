@@ -21,12 +21,14 @@ struct SelectionScene: View {
     let regions = ["US East", "US West", "Europe", "Asia"]
     let clusters = ["Cluster 1", "Cluster 2", "Cluster 3"]
     let services = ["Service X", "Service Y", "Service Z"]
-    let operations = ["add", "modify", "delete"]
+    let operations = [
+        Operations.Add.rawValue, Operations.Modify.rawValue, Operations.Delete.rawValue,
+    ]
 
     @State private var showModal: Bool = false
     @State private var keyValuePairs: [KeyValueInput] = []
     @State private var selectedDirectory: URL?
-    @State private var selectedOperation: String = "modify"
+    @State private var selectedOperation: String = Operations.Modify.rawValue
 
     var body: some View {
         VStack(spacing: 20) {
@@ -211,12 +213,13 @@ struct SelectionScene: View {
         selectedRegion = ""
         selectedCluster = ""
         selectedService = ""
-        selectedOperation = "modify"
+        selectedOperation = Operations.Modify.rawValue
     }
 }
 
 struct SelectionScene_Previews: PreviewProvider {
     static var previews: some View {
         SelectionScene()
+            .environmentObject(AppData())
     }
 }

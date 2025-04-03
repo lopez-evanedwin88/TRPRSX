@@ -10,10 +10,13 @@ import SwiftUI
 @main
 struct TerraParseXApp: App {
     @StateObject private var appData = AppData()
+    @StateObject private var operationModalData = OperationModalData()
 
     var body: some Scene {
         WindowGroup(id: Routes.Selection.rawValue) {
-            SelectionScene().environmentObject(appData)
+            SelectionScene()
+                .environmentObject(appData)
+                .environmentObject(operationModalData)
         }
         .commands {
             CommandGroup(replacing: .newItem) {} // Disable Cmd+N

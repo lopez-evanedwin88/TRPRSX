@@ -12,3 +12,9 @@ enum Routes: String {
     case Preview = "Preview"
     case Settings = "Settings"
 }
+
+enum Operations: String {
+    case Add = "add"
+    case Modify = "modify"
+    case Delete = "delete"
+}

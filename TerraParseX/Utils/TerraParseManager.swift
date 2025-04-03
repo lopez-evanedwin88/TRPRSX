@@ -30,7 +30,10 @@ class TerraParseManager {
     }
 
     /// Adds or updates key-value pairs in the specified HCL files using hcledit.
-    func submitChanges(to files: [String], keyValuePairs: [KeyValueInput]) {
+    func submitChanges(
+        to files: [String], keyValuePairs: [KeyValueInput], operationModalData: OperationModalData,
+        delegate: OperationModalDelegate
+    ) {
         do {
             try HCLTool.hcledit.validate()
         } catch {
@@ -44,12 +47,16 @@ class TerraParseManager {
             if keyPath.contains(".") { // Validation if not root-key
                 print("classic root key")
                 composeHCLConfiguration(
-                    files: files, keyValuePairs: keyValuePairs
+                    files: files, keyValuePairs: keyValuePairs,
+                    operationModalData: operationModalData,
+                    delegate: delegate
                 )
             } else {
                 print("custom root key")
                 composeCustomConfigurationHCL(
-                    files: files, keyValuePairs: keyValuePairs, inputKey: keyPath
+                    files: files, keyValuePairs: keyValuePairs, inputKey: keyPath,
+                    operationModalData: operationModalData,
+                    delegate: delegate
                 )
             }
         }
@@ -59,71 +66,113 @@ class TerraParseManager {
     /// This function implements 2-levels of nested key-value pairs
     /// Which was the limitation of hcledit tool
     func composeHCLConfiguration(
-        files: [String], keyValuePairs: [KeyValueInput],
-        hcleditPath: String = HCLTool.hcledit.executableURL!
+        files: [String], keyValuePairs: [KeyValueInput], operationModalData: OperationModalData,
+        delegate: OperationModalDelegate
     ) {
-        for file in files {
-            for pair in keyValuePairs {
-                let keyPath = pair.key // e.g., "inputs.nested.key"
-                let valueStr = pair.formattedValue()
-                print("keyPath", keyPath)
-                print("valueStr", valueStr)
-                let process = Process()
-                let pipe = Pipe()
+        runProcessHCLComposeInBackground(
+            files: files,
+            keyValuePairs: keyValuePairs,
+            onStart: {
+                operationModalData.isLoading = true
+                operationModalData.statusMessage = "Processing..."
+            },
+            onProcess: { message in
+                operationModalData.statusMessage = message
+            },
+            onComplete: {
+                operationModalData.isLoading = false
+                delegate.openWindow(id: Routes.Preview.rawValue)
+            }
+        )
+    }
 
-                process.executableURL = URL(fileURLWithPath: hcleditPath)
+    /// A compose function that is wrapped in a background task
+    func runProcessHCLComposeInBackground(
+        files: [String],
+        keyValuePairs: [KeyValueInput],
+        onStart: @escaping () -> Void,
+        onProcess: @escaping (String) -> Void,
+        onComplete: @escaping () -> Void
+    ) {
+        onStart() // Trigger loading state
 
-                // Set hcledit command based on action
-                switch pair.action.lowercased() {
-                case "add":
-                    process.arguments = [
-                        "attribute", "append",
-                        keyPath, valueStr,
-                        "-f", file, "-u", // -f for file input, -u for in-place update
-                    ]
-                case "modify":
-                    process.arguments = [
-                        "attribute", "set",
-                        keyPath, valueStr,
-                        "-f", file, "-u",
-                    ]
-                case "delete":
-                    process.arguments = [
-                        "attribute", "rm",
-                        keyPath,
-                        "-f", file, "-u",
-                    ]
-                default:
-                    print("Unknown action '\(pair.action)' for \(keyPath) in \(file)")
-                    continue
-                }
+        Task.detached(priority: .userInitiated) {
+            for file in files {
+                for pair in keyValuePairs {
+                    let hcleditPath: String = HCLTool.hcledit.executableURL!
+                    let keyPath = pair.key // e.g., "inputs.nested.key"
+                    let valueStr = pair.formattedValue()
 
-                process.standardOutput = pipe
-                process.standardError = pipe
+                    let process = Process()
+                    let pipe = Pipe()
 
-                do {
-                    try process.run()
-                    process.waitUntilExit()
+                    process.executableURL = URL(fileURLWithPath: hcleditPath)
 
-                    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-                    if let output = String(data: data, encoding: .utf8), !output.isEmpty {
-                        print("hcledit output for \(file): \(output)")
+                    // Set hcledit command based on action
+                    switch pair.action.lowercased() {
+                    case Operations.Add.rawValue:
+                        process.arguments = [
+                            "attribute", "append",
+                            keyPath, valueStr,
+                            "-f", file, "-u", // -f for file input, -u for in-place update
+                        ]
+                    case Operations.Modify.rawValue:
+                        process.arguments = [
+                            "attribute", "set",
+                            keyPath, valueStr,
+                            "-f", file, "-u",
+                        ]
+                    case Operations.Delete.rawValue:
+                        process.arguments = [
+                            "attribute", "rm",
+                            keyPath,
+                            "-f", file, "-u",
+                        ]
+                    default:
+                        await MainActor.run {
+                            onProcess("Unknown action '\(pair.action)' for \(keyPath) in \(file)")
+                        }
+                        return
                     }
 
-                    if process.terminationStatus == 0 {
-                        print(
-                            "Successfully \(pair.action)ed \(keyPath) in \(file) \(pair.action == "delete" ? "" : "to \(valueStr)")"
-                        )
-                    } else {
-                        print(
-                            "hcledit failed with status \(process.terminationStatus) for \(keyPath) in \(file)"
-                        )
+                    process.standardOutput = pipe
+                    process.standardError = pipe
+
+                    do {
+                        try process.run()
+                        process.waitUntilExit()
+
+                        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+                        if let output = String(data: data, encoding: .utf8), !output.isEmpty {
+                            print("hcledit output for \(file): \(output)")
+                        }
+
+                        let message: String
+                        if process.terminationStatus == 0 {
+                            message =
+                                "Successfully \(pair.action)ed \(keyPath) in \(file) \(pair.action == "delete" ? "" : "to \(valueStr)")"
+                            print(message)
+                        } else {
+                            message =
+                                "Failed with status \(process.terminationStatus) for \(keyPath) in \(file)"
+                            print(message)
+                        }
+
+                        await MainActor.run {
+                            onProcess(message)
+                        }
+                    } catch {
+                        let errorMessage =
+                            "Error running hcledit on \(file) for \(keyPath): \(error.localizedDescription)"
+                        print(errorMessage)
+                        await MainActor.run {
+                            onProcess(errorMessage)
+                        }
                     }
-                } catch {
-                    print(
-                        "Error running hcledit on \(file) for \(keyPath): \(error.localizedDescription)"
-                    )
                 }
+            }
+            await MainActor.run {
+                onComplete()
             }
         }
     }
@@ -132,7 +181,9 @@ class TerraParseManager {
     /// This will only work for root level key-value pairs
     func composeCustomConfigurationHCL(
         files: [String], keyValuePairs: [KeyValueInput],
-        inputKey: String
+        inputKey: String,
+        operationModalData: OperationModalData,
+        delegate: OperationModalDelegate
     ) {
         // Validate tools
         do {
@@ -146,177 +197,229 @@ class TerraParseManager {
             return
         }
 
-        for file in files {
-            let hcleditProcess = Process()
-            let hcleditPipe = Pipe()
-
-            hcleditProcess.executableURL = URL(fileURLWithPath: hcleditURL)
-            hcleditProcess.arguments =
-                HCLEditCommand.attributeGet(key: inputKey, file: file).arguments
-            hcleditProcess.standardOutput = hcleditPipe
-            hcleditProcess.standardError = hcleditPipe
-
-            let hcl2jsonProcess = Process()
-            let hcl2jsonPipe = Pipe()
-            let hcl2jsonInputPipe = Pipe() // Pipe for hcl2json stdin
-
-            guard let hcl2jsonURL = HCLTool.hcl2json.executableURL else {
-                print("Error: hcl2json executable URL is nil")
-                continue
+        // Run hcledit
+        runProcessCustomHCLComposeInBackground(
+            files: files,
+            keyValuePairs: keyValuePairs,
+            inputKey: inputKey,
+            hcleditURL: hcleditURL,
+            operationModalData: operationModalData,
+            delegate: delegate,
+            onStart: {
+                operationModalData.isLoading = true
+                operationModalData.statusMessage = "Processing using custom..."
+            },
+            onProcess: { message in
+                operationModalData.statusMessage = message
+            },
+            onComplete: {
+                operationModalData.isLoading = false
+                delegate.openWindow(id: Routes.Preview.rawValue)
             }
-            hcl2jsonProcess.executableURL = URL(fileURLWithPath: hcl2jsonURL)
-            hcl2jsonProcess.standardInput = hcl2jsonInputPipe
-            hcl2jsonProcess.standardOutput = hcl2jsonPipe
-            hcl2jsonProcess.standardError = hcl2jsonPipe
+        )
+    }
 
-            do {
-                try hcleditProcess.run()
-                hcleditProcess.waitUntilExit()
+    func runProcessCustomHCLComposeInBackground(
+        files: [String],
+        keyValuePairs: [KeyValueInput],
+        inputKey: String,
+        hcleditURL: String,
+        operationModalData _: OperationModalData,
+        delegate _: OperationModalDelegate,
+        onStart: @escaping () -> Void,
+        onProcess: @escaping (String) -> Void,
+        onComplete: @escaping () -> Void
+    ) {
+        onStart() // Trigger loading state
 
-                let hclData = hcleditPipe.fileHandleForReading.readDataToEndOfFile()
-                guard
-                    let hclString = String(data: hclData, encoding: .utf8)?.trimmingCharacters(
-                        in: .whitespacesAndNewlines),
-                    !hclString.isEmpty
-                else {
-                    print("\(file): No HCL output from hcledit for '\(inputKey)'")
+        Task.detached(priority: .userInitiated) {
+            for file in files {
+                let hcleditProcess = Process()
+                let hcleditPipe = Pipe()
+
+                hcleditProcess.executableURL = URL(fileURLWithPath: hcleditURL)
+                hcleditProcess.arguments =
+                    HCLEditCommand.attributeGet(key: inputKey, file: file).arguments
+                hcleditProcess.standardOutput = hcleditPipe
+                hcleditProcess.standardError = hcleditPipe
+
+                let hcl2jsonProcess = Process()
+                let hcl2jsonPipe = Pipe()
+                let hcl2jsonInputPipe = Pipe() // Pipe for hcl2json stdin
+
+                guard let hcl2jsonURL = HCLTool.hcl2json.executableURL else {
+                    print("Error: hcl2json executable URL is nil")
                     continue
                 }
+                hcl2jsonProcess.executableURL = URL(fileURLWithPath: hcl2jsonURL)
+                hcl2jsonProcess.standardInput = hcl2jsonInputPipe
+                hcl2jsonProcess.standardOutput = hcl2jsonPipe
+                hcl2jsonProcess.standardError = hcl2jsonPipe
 
-                // Wrap root key with `=` e.g. "inputs ="
-                let wrappedHCL = "\(inputKey) = \(hclString)"
-                // Pipe wrappedHCL to hcl2json stdin
-                let inputHandle = hcl2jsonInputPipe.fileHandleForWriting
-                if let wrappedData = wrappedHCL.data(using: .utf8) {
-                    inputHandle.write(wrappedData)
-                }
-                inputHandle.closeFile() // Signal EOF to hcl2json
+                do {
+                    try hcleditProcess.run()
+                    hcleditProcess.waitUntilExit()
 
-                try hcl2jsonProcess.run()
-                hcleditProcess.waitUntilExit()
-
-                var configDict: [String: Any]
-                let jsonData = hcl2jsonPipe.fileHandleForReading.readDataToEndOfFile()
-                guard
-                    let jsonString = String(data: jsonData, encoding: .utf8)?.trimmingCharacters(
-                        in: .whitespacesAndNewlines),
-                    !jsonString.isEmpty
-                else {
-                    print("\(file): No JSON output from hcl2json for '\(inputKey)'")
-                    continue
-                }
-                if let jsonDataConverted = jsonString.data(using: .utf8), // Convert back to Data
-                   let json = try JSONSerialization.jsonObject(with: jsonDataConverted)
-                   as? [String: Any]
-                {
-                    configDict = json
-                } else {
-                    print("\(file): JSON is not a [String: Any]: \(jsonString)")
-                    continue
-                }
-
-                for pair in keyValuePairs {
-                    let keyPath = pair.key // e.g., "inputs.nested.key"
-                    let valueStr = pair.formattedValue()
-
-                    guard let hclData = valueStr.data(using: .utf8) else {
-                        print("\(file): Failed to convert valueStr to data: \(valueStr)")
+                    let hclData = hcleditPipe.fileHandleForReading.readDataToEndOfFile()
+                    guard
+                        let hclString = String(data: hclData, encoding: .utf8)?.trimmingCharacters(
+                            in: .whitespacesAndNewlines),
+                        !hclString.isEmpty
+                    else {
+                        print("\(file): No HCL output from hcledit for '\(inputKey)'")
                         continue
                     }
 
-                    switch pair.action.lowercased() {
-                    case "add", "modify":
-                        let jsonData = try hclToJSON(hclData: hclData)
-                        let jsonObject =
-                            try JSONSerialization.jsonObject(with: jsonData)
-                                as? [String: Any]
-                        var inputsDict = (configDict[inputKey] as? [String: Any]) ?? [:]
-                        for (key, value) in jsonObject! {
-                            inputsDict[key] = value
-                        }
-                        configDict[inputKey] = inputsDict
-                    case "delete":
-                        let components = keyPath.split(separator: ".").map(String.init)
-                        if components.count == 1 {
-                            configDict.removeValue(forKey: keyPath)
-                        } else if components.count == 2 {
-                            let rootKey = components[0]
-                            let nestedKey = components[1]
-                            if var inputsDict = configDict[rootKey] as? [String: Any] {
-                                inputsDict.removeValue(forKey: nestedKey)
-                                if inputsDict.isEmpty {
-                                    configDict.removeValue(forKey: rootKey)
-                                } else {
-                                    configDict[rootKey] = inputsDict
-                                }
-                            }
-                        } else {
-                            print("\(file): Unsupported nested depth for delete: \(keyPath)")
+                    // Wrap root key with `=` e.g. "inputs ="
+                    let wrappedHCL = "\(inputKey) = \(hclString)"
+                    // Pipe wrappedHCL to hcl2json stdin
+                    let inputHandle = hcl2jsonInputPipe.fileHandleForWriting
+                    if let wrappedData = wrappedHCL.data(using: .utf8) {
+                        inputHandle.write(wrappedData)
+                    }
+                    inputHandle.closeFile() // Signal EOF to hcl2json
+
+                    try hcl2jsonProcess.run()
+                    hcleditProcess.waitUntilExit()
+
+                    var configDict: [String: Any]
+                    let jsonData = hcl2jsonPipe.fileHandleForReading.readDataToEndOfFile()
+                    guard
+                        let jsonString = String(data: jsonData, encoding: .utf8)?
+                        .trimmingCharacters(
+                            in: .whitespacesAndNewlines),
+                        !jsonString.isEmpty
+                    else {
+                        print("\(file): No JSON output from hcl2json for '\(inputKey)'")
+                        continue
+                    }
+                    if let jsonDataConverted = jsonString.data(using: .utf8), // Convert back to Data
+                       let json = try JSONSerialization.jsonObject(with: jsonDataConverted)
+                       as? [String: Any]
+                    {
+                        configDict = json
+                    } else {
+                        print("\(file): JSON is not a [String: Any]: \(jsonString)")
+                        continue
+                    }
+
+                    for pair in keyValuePairs {
+                        let keyPath = pair.key // e.g., "inputs.nested.key"
+                        let valueStr = pair.formattedValue()
+
+                        guard let hclData = valueStr.data(using: .utf8) else {
+                            print("\(file): Failed to convert valueStr to data: \(valueStr)")
                             continue
                         }
-                    default:
-                        print("Unknown action '\(pair.action)' for \(pair.key) in \(file)")
-                        continue
+
+                        switch pair.action.lowercased() {
+                        case Operations.Add.rawValue, Operations.Modify.rawValue:
+                            let jsonData = try hclToJSON(hclData: hclData)
+                            let jsonObject =
+                                try JSONSerialization.jsonObject(with: jsonData)
+                                    as? [String: Any]
+                            var inputsDict = (configDict[inputKey] as? [String: Any]) ?? [:]
+                            for (key, value) in jsonObject! {
+                                inputsDict[key] = value
+                            }
+                            configDict[inputKey] = inputsDict
+                        case Operations.Delete.rawValue:
+                            let components = keyPath.split(separator: ".").map(String.init)
+                            if components.count == 1 {
+                                configDict.removeValue(forKey: keyPath)
+                            } else if components.count == 2 {
+                                let rootKey = components[0]
+                                let nestedKey = components[1]
+                                if var inputsDict = configDict[rootKey] as? [String: Any] {
+                                    inputsDict.removeValue(forKey: nestedKey)
+                                    if inputsDict.isEmpty {
+                                        configDict.removeValue(forKey: rootKey)
+                                    } else {
+                                        configDict[rootKey] = inputsDict
+                                    }
+                                }
+                            } else {
+                                print("\(file): Unsupported nested depth for delete: \(keyPath)")
+                                continue
+                            }
+                        default:
+                            print("Unknown action '\(pair.action)' for \(pair.key) in \(file)")
+                            continue
+                        }
+                    }
+
+                    let theJSONData = try? JSONSerialization.data(
+                        withJSONObject: configDict as Any, options: .prettyPrinted
+                    )
+                    let data = String(data: theJSONData!, encoding: .utf8)!
+                    // if DEBUG working jqFilter
+                    // let jqFilter = """
+                    // .inputs | to_entries | map("\\(.key) = " + (if .value | type == \"string\" then (if .value | test(\"^\\\\$\\\\{.*\\\\}$\") then .value else @json end) else (.value | tostring) end)) | join(", ")
+                    // """
+                    // A jqFilter that recursively wraps values to hcl-format
+                    let jqFilter = """
+                    def to_hcl:
+                        if type == \"object\" then
+                            "{\n" + (to_entries | map("\\(.key) = \\(.value | to_hcl)") | join(",\n")) + "\n}"
+                        elif type == \"array\" then
+                            "[\n" + (map(to_hcl) | join(",\n")) + "\n]"
+                        elif type == \"string\" and test(\"^\\\\$\\\\{.*\\\\}$\") then
+                            .[2:-1]
+                        elif type == \"string\" then
+                            @json
+                        else
+                            tostring
+                        end;
+                    .\(inputKey) | to_hcl
+                    """
+
+                    if let hclOutput = jsonToHcl(
+                        jsonInput: data,
+                        jqFilter: jqFilter,
+                        inputKey: inputKey
+                    ) {
+                        let process = Process()
+                        let pipe = Pipe()
+
+                        process.executableURL = URL(fileURLWithPath: HCLTool.hcledit.executableURL!)
+                        process.arguments = [
+                            "attribute", "append",
+                            inputKey,
+                            hclOutput.replacingOccurrences(of: "\(inputKey) = ", with: ""),
+                            "-f", file, "-u", // -f for file input, -u for in-place update
+                        ]
+
+                        process.standardOutput = pipe
+                        process.standardError = pipe
+                        try process.run()
+                        process.waitUntilExit()
+
+                        let message: String
+                        if process.terminationStatus == 0 {
+                            message =
+                                "Successfully \(keyValuePairs.first!.action)ed \(inputKey) in \(file) "
+                            print(message)
+                        } else {
+                            message =
+                                "Failed with status \(process.terminationStatus) for \(inputKey) in \(file)"
+                            print(message)
+                        }
+
+                        await MainActor.run {
+                            onProcess(message)
+                        }
+                    }
+                } catch {
+                    let message: String
+                    message = "Error processing \(file): \(error)"
+                    await MainActor.run {
+                        onProcess(message)
+                        // onComplete()
                     }
                 }
-
-                let theJSONData = try? JSONSerialization.data(
-                    withJSONObject: configDict as Any, options: .prettyPrinted
-                )
-                let data = String(data: theJSONData!, encoding: .utf8)!
-                // if DEBUG working jqFilter
-                // let jqFilter = """
-                // .inputs | to_entries | map("\\(.key) = " + (if .value | type == \"string\" then (if .value | test(\"^\\\\$\\\\{.*\\\\}$\") then .value else @json end) else (.value | tostring) end)) | join(", ")
-                // """
-                // A jqFilter that recursively wraps values to hcl-format
-                let jqFilter = """
-                def to_hcl:
-                    if type == \"object\" then
-                        "{\n" + (to_entries | map("\\(.key) = \\(.value | to_hcl)") | join(",\n")) + "\n}"
-                    elif type == \"array\" then
-                        "[\n" + (map(to_hcl) | join(",\n")) + "\n]"
-                    elif type == \"string\" and test(\"^\\\\$\\\\{.*\\\\}$\") then
-                        .[2:-1]
-                    elif type == \"string\" then
-                        @json
-                    else
-                        tostring
-                    end;
-                .\(inputKey) | to_hcl
-                """
-
-                if let hclOutput = jsonToHcl(
-                    jsonInput: data,
-                    jqFilter: jqFilter,
-                    inputKey: inputKey
-                ) {
-                    // let process = Process()
-                    // let pipe = Pipe()
-                    //
-                    // process.executableURL = URL(fileURLWithPath: HCLTool.hcledit.executableURL!)
-                    // process.arguments = [
-                    //     "attribute", "append",
-                    //     inputKey,
-                    //     hclOutput.replacingOccurrences(of: "\(inputKey) = ", with: ""),
-                    //     "-f", file, "-u", // -f for file input, -u for in-place update
-                    // ]
-                    //
-                    // process.standardOutput = pipe
-                    // process.standardError = pipe
-                    // try process.run()
-                    // process.waitUntilExit()
-                    let keyValuePairs = [
-                        KeyValueInput(
-                            key: inputKey,
-                            value: hclOutput.replacingOccurrences(of: "\(inputKey) = ", with: "")
-                                .parseValue(),
-                            action: "add"
-                        ),
-                    ]
-                    composeHCLConfiguration(files: [file], keyValuePairs: keyValuePairs)
-                }
-            } catch {
-                print("Error processing \(file): \(error)")
+            }
+            await MainActor.run {
+                onComplete()
             }
         }
     }
