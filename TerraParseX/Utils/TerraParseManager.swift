@@ -445,17 +445,24 @@ class TerraParseManager {
             // Split content into lines for easier processing
             let lines = content.components(separatedBy: .newlines)
 
-            for line in lines {
+            // Highlight modified keys
+            for (index, line) in lines.enumerated() {
                 for key in modifiedKeys {
-                    // Check if the line contains the key (e.g., "inputs.count" or just "count")
                     if line.contains(key) || line.contains(key.split(separator: ".").last ?? "") {
-                        // Find the range of the entire line in the content
-                        if let range = content.range(of: line) {
+                        // Find the exact range of this line in the original content
+                        if let range = content.range(of: line, options: [], range: nil, locale: nil) {
                             let nsRange = NSRange(range, in: content)
-                            let attrRange = Range(nsRange, in: attributedString)!
-                            attributedString[attrRange].foregroundColor = .blue
-                            attributedString[attrRange].font = .system(.body, design: .monospaced)
-                                .bold()
+                            // Adjust for multi-line content by finding the correct line
+                            let lineStart =
+                                content[...range.lowerBound].components(separatedBy: .newlines)
+                                    .count - 1
+                            if lineStart == index {
+                                let attrRange = Range(nsRange, in: attributedString)!
+                                attributedString[attrRange].foregroundColor = .blue
+                                attributedString[attrRange].font = .system(
+                                    size: 16, design: .monospaced
+                                ).bold()
+                            }
                         }
                     }
                 }
