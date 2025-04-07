@@ -111,23 +111,23 @@ class TerraParseManager {
                     // Set hcledit command based on action
                     switch pair.action.lowercased() {
                     case Operations.Add.rawValue:
-                        process.arguments = [
-                            "attribute", "append",
-                            keyPath, valueStr,
-                            "-f", file, "-u", // -f for file input, -u for in-place update
-                        ]
+                        process.arguments =
+                            HCLEditCommand.attributeAction(
+                                key: keyPath, file: file, value: valueStr,
+                                action: HCLAttrAction.append
+                            ).arguments
                     case Operations.Modify.rawValue:
-                        process.arguments = [
-                            "attribute", "set",
-                            keyPath, valueStr,
-                            "-f", file, "-u",
-                        ]
+                        process.arguments =
+                            HCLEditCommand.attributeAction(
+                                key: keyPath, file: file, value: valueStr,
+                                action: HCLAttrAction.set
+                            ).arguments
                     case Operations.Delete.rawValue:
-                        process.arguments = [
-                            "attribute", "rm",
-                            keyPath,
-                            "-f", file, "-u",
-                        ]
+                        process.arguments =
+                            HCLEditCommand.attributeAction(
+                                key: keyPath, file: file, value: valueStr,
+                                action: HCLAttrAction.remove
+                            ).arguments
                     default:
                         await MainActor.run {
                             onProcess("Unknown action '\(pair.action)' for \(keyPath) in \(file)")
@@ -382,12 +382,13 @@ class TerraParseManager {
                         let pipe = Pipe()
 
                         process.executableURL = URL(fileURLWithPath: HCLTool.hcledit.executableURL!)
-                        process.arguments = [
-                            "attribute", "append",
-                            inputKey,
-                            hclOutput.replacingOccurrences(of: "\(inputKey) = ", with: ""),
-                            "-f", file, "-u", // -f for file input, -u for in-place update
-                        ]
+                        process.arguments =
+                            HCLEditCommand.attributeAction(
+                                key: inputKey, file: file,
+                                value: hclOutput.replacingOccurrences(
+                                    of: "\(inputKey) = ", with: ""
+                                ), action: HCLAttrAction.append
+                            ).arguments
 
                         process.standardOutput = pipe
                         process.standardError = pipe
@@ -722,9 +723,19 @@ enum HCLToolError: Error {
     case toolNotFound(name: String)
 }
 
+enum HCLAttrAction: String {
+    case append
+    case set
+    case remove = "rm"
+}
+
 enum HCLEditCommand {
     case attributeGet(key: String, file: String)
     case attributeSet(key: String, value: String, file: String)
+    case attributeAction(
+        key: String, file: String, value: String, action: HCLAttrAction,
+        inPlaceUpdate: String = "-u"
+    )
     case jq(filter: String)
     case fmt
 
@@ -734,6 +745,8 @@ enum HCLEditCommand {
             return ["attribute", "get", key, "-f", file]
         case let .attributeSet(key, value, file):
             return ["attribute", "set", key, value, "-f", file, "-u"]
+        case let .attributeAction(key, value, file, action, inPlaceUpdate):
+            return ["attribute", action.rawValue, key, value, "-f", file, inPlaceUpdate]
         case let .jq(filter):
             return ["-r", filter] // `-r` for raw output (HCL-compatible)
         case .fmt:
